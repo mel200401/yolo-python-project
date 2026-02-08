@@ -11,7 +11,9 @@ Visualization (Sara)
 after Wednesday
 
 --> try to find some papers to understand what has to go into the report 
+
 --> check the requirements 
+--> After that divide parts of report to write 
 
 Introduction:  
 Methods:  
