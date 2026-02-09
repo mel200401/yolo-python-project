@@ -1,5 +1,5 @@
-import os
 import shutil
+import os
 from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -14,6 +14,8 @@ labels_directory.mkdir(exist_ok=True)
 
 csv_path = dataset_directory / "train_solution_bounding_boxes (1).csv"
 
+print("directories and path are set up")
+
 # Image Sizes
 img_width = 676
 img_height = 380
@@ -26,12 +28,20 @@ for folder in [train_img_directory, test_img_directory]:
         if img_path.suffix.lower() == ".jpg":
             (labels_directory / f"{img_path.stem}.txt").touch()
 
-# have to convert the file (which has similar structure to PASCAL VOC annotation) to YOLO readable file
+print("empty labels are created")
+
+# have to convert the file (PASCAL VOC annotation) to YOLO readable file
 df = pd.read_csv(csv_path)
 
 for _, row in df.iterrows():
     img_name = row["image"]
     xmin, ymin, xmax, ymax = row["xmin"], row["ymin"], row["xmax"], row["ymax"]
+
+    # clipping in case of negative or values outside of the image
+    xmin = max(0, xmin)
+    ymin = max(0, ymin)
+    xmax = min(img_width, xmax)
+    ymax = min(img_height, ymax)
 
     # Convert to YOLO normalized format
     x_center = ((xmin + xmax) / 2) / img_width
@@ -45,3 +55,64 @@ for _, row in df.iterrows():
         f.write(f"{class_id} {x_center} {y_center} {width} {height}\n")
 
 print("YOLO label files created.")
+
+# Splitting into training, evaluate and the test set
+for split in ["train", "val"]:
+    (dataset_directory / split / "images").mkdir(parents=True, exist_ok=True)
+    (dataset_directory / split / "labels").mkdir(parents=True, exist_ok=True)
+
+# List of training images (so we don't use the test images for the split)
+train_images = [
+    img for img in train_img_directory.iterdir() if img.suffix.lower() == ".jpg"
+]
+
+# 80% train, 20% val
+train_imgs, val_imgs = train_test_split(train_images, test_size=0.2, random_state=42)
+
+print("Data has been split")
+
+# Copy training images + labels
+for img_path in train_imgs:
+    shutil.copy(img_path, dataset_directory / "train" / "images" / img_path.name)
+    shutil.copy(
+        labels_directory / f"{img_path.stem}.txt",
+        dataset_directory / "train" / "labels" / f"{img_path.stem}.txt",
+    )
+
+# Copy validation images + labels
+for img_path in val_imgs:
+    shutil.copy(img_path, dataset_directory / "val" / "images" / img_path.name)
+    shutil.copy(
+        labels_directory / f"{img_path.stem}.txt",
+        dataset_directory / "val" / "labels" / f"{img_path.stem}.txt",
+    )
+
+# have the test set also in same format in case we want to have some evaluation metrics
+(dataset_directory / "test" / "images").mkdir(parents=True, exist_ok=True)
+(dataset_directory / "test" / "labels").mkdir(parents=True, exist_ok=True)
+
+# Copy test images + labels
+for img_path in test_img_directory.iterdir():
+    if img_path.suffix.lower() == ".jpg":
+        shutil.copy(img_path, dataset_directory / "test" / "images" / img_path.name)
+        shutil.copy(
+            labels_directory / f"{img_path.stem}.txt",
+            dataset_directory / "test" / "labels" / f"{img_path.stem}.txt",
+        )
+
+print("Dataset is ready for YOLO.")
+
+# Create Yaml file for YOLO
+yaml_content = f"""
+train: {dataset_directory / "train" / "images"}
+val: {dataset_directory / "val" / "images"}
+test: {dataset_directory / "test" / "images"}
+
+nc: 1
+names: ["car"]
+"""
+
+with open(dataset_directory / "data.yaml", "w") as f:
+    f.write(yaml_content)
+
+print("data.yaml created.")
