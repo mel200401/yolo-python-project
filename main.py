@@ -3,6 +3,8 @@ import os
 from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from ultralytics import YOLO
+import torch
 
 # Set Up Data Paths
 
@@ -10,7 +12,8 @@ dataset_directory = Path("data")
 train_img_directory = dataset_directory / "training_images"
 test_img_directory = dataset_directory / "testing_images"
 labels_directory = dataset_directory / "labels"
-labels_directory.mkdir(exist_ok=True)
+#labels_directory.mkdir(exist_ok=True)
+labels_directory.mkdir(parents=True, exist_ok=True) 
 
 csv_path = dataset_directory / "train_solution_bounding_boxes (1).csv"
 
@@ -104,15 +107,58 @@ print("Dataset is ready for YOLO.")
 
 # Create Yaml file for YOLO
 yaml_content = f"""
-train: {dataset_directory / "train" / "images"}
-val: {dataset_directory / "val" / "images"}
-test: {dataset_directory / "test" / "images"}
+path: {dataset_directory.resolve()}
+train: train/images
+val: val/images
+test: test/images
 
 nc: 1
 names: ["car"]
 """
 
+"""
+train: {dataset_directory / "train" / "images"}
+val: {dataset_directory / "val" / "images"}
+test: {dataset_directory / "test" / "images"}
+"""
+
+
 with open(dataset_directory / "data.yaml", "w") as f:
     f.write(yaml_content)
 
 print("data.yaml created.")
+
+
+# ==========================================
+# TRAINING SECTION (Optional)
+# Uncomment this section if you want to retrain the model. 
+# Estimated ~2 hours on MacBook MPS.
+# ==========================================
+"""
+#import model
+model = YOLO('yolov8n.pt')
+
+if torch.backends.mps.is_available():#for ios
+    device_type = 'mps'        
+elif torch.cuda.is_available(): #for cuda
+    device_type = '0'          
+else:
+    device_type = 'cpu'        
+
+#start training
+results = model.train(
+    data='data/data.yaml',   
+    epochs=15,               
+    imgsz=640,               
+    batch=8,                #adjust this if you have small VRAM
+    name='car_detection', 
+    device=device_type   
+)
+
+"""
+# INFERENCE SECTION
+# Make sure the 'best.pt' is in the specified path below.
+model_path = 'runs/car_detection/weights/best.pt' 
+model = YOLO(model_path)
+
+
