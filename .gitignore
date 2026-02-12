@@ -1,4 +1,14 @@
 /data
+runs/
+data/training_images/
+data/testing_images/
+data/labels/
+data/train/
+data/val/
+data/test/
+*.pt
+.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
