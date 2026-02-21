@@ -15,10 +15,28 @@ after Wednesday
 --> check the requirements 
 --> After that divide parts of report to write 
 
-Introduction:  
-Methods:  
+
+
+Introduction: (Sara)
+
+- RQ: What are the advantages yolo? 
+- traffic detection relevance, object detection algorithms (also autonomous driving)
+- Methodology: - details about comparison
+
+Methods:  (theory of object detection ,why choose yolo in comparison, important: which methods/libraries/packages are being used)
+- Preprocessing (Meli)
+- Model (I-chun)
+- Visualization (Sara)
+
 Data Description:  
+- dataset (Meli)
 
+Building Model:
+- Preprocessing (Meli)
+- Model (I-chun)
+- Visualization (Sara)
 
-Results:  
-Conclusion:  
+Conclusion: (I-chun)
+- vision transformer maybe higher quality output but more requirements for the dataset
+- yolo better for small scale projects
+-  Compare with other published works and detail anyshortcomings of your work!
