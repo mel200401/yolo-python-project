@@ -1,5 +1,4 @@
 /data
-runs/
 data/training_images/
 data/testing_images/
 data/labels/
