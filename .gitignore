@@ -1,5 +1,4 @@
 /data
-runs/
 data/training_images/
 data/testing_images/
 data/labels/
@@ -216,3 +215,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# models
+models
