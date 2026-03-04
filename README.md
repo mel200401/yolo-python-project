@@ -25,18 +25,20 @@ Introduction: (Sara)
 
 Methods:  (theory of object detection ,why choose yolo in comparison, important: which methods/libraries/packages are being used)
 - Preprocessing (Meli)
-- Model (I-chun)
-- Visualization (Sara)
+- Model (V8, V26: Sara)(ViT:I-chun)
+- Visualization (I-Chun)
 
 Data Description:  
 - dataset (Meli)
 
 Building Model:
 - Preprocessing (Meli)
-- Model (I-chun)
-- Visualization (Sara)
+- Model (V8, V26: Sara)(ViT:I-chun)
+- Visualization (I-Chun)
 
 Conclusion: (I-chun)
 - vision transformer maybe higher quality output but more requirements for the dataset
 - yolo better for small scale projects
 -  Compare with other published works and detail anyshortcomings of your work!
+
+References
